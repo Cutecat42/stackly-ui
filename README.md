@@ -43,10 +43,10 @@ Stackly allows documents to be uploaded into a Queue, assigned to Spaces (top-le
 
 ### Phase 2 – Backend Setup
 
-- [ ] Initialize Spring Boot project
-- [ ] Add Spring Web, Spring Data JPA, PostgreSQL dependencies
-- [ ] Configure database connection
-- [ ] Create basic health endpoint (`/api/health`)
+- [x] Initialize Spring Boot project
+- [x] Add Spring Web, Spring Data JPA, PostgreSQL dependencies
+- [x] Configure database connection (Currently with H2)
+- [x] Create basic health endpoint (`/api/health`)
 
 ### Phase 3 – Data Models
 
