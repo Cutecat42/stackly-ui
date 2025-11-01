@@ -1,9 +1,7 @@
 :root {
-  --accent: #7A5DF6;
-  --bg: #F7F8FA;
-  --text-main: #1A1A1A;
-  --text-muted: #6A6A6A;
-  --border: #E4E6EA;
+  --bs-primary: #7A5DF6; 
+  --bs-body-bg: #F7F8FA;
+  --bs-body-color: #1A1A1A;
 }
 
 * {
