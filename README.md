@@ -38,8 +38,8 @@ Stackly allows documents to be uploaded into a Queue, assigned to Spaces (top-le
 - [x] Create global CSS (colors/fonts)
 - [x] Build basic Sidebar component
 - [x] Build main workspace placeholder
-- [ ] Make sidebar interactive (clickable Spaces)
-- [ ] Integrate Bootstrap for responsive layout
+- [x] Make sidebar interactive (clickable Spaces)
+- [x] Integrate Bootstrap for responsive layout
 
 ### Phase 2 – Backend Setup
 
