@@ -36,5 +36,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "@vitejs/plugin-react": "^5.1.0",
+    "babel-jest": "^30.2.0",
+    "jsdom": "^27.1.0",
+    "vitest": "^4.0.6"
   }
 }

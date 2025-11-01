@@ -6,7 +6,7 @@ function Main({ activeSpace }) {
 
 
   return (
-    <div className="h-100">
+    <div data-testid="main-container" className="h-100">
       {showSpaces ? (
         <Spaces spaceName={activeSpace}/>
       ) : (
