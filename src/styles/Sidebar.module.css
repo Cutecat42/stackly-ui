@@ -1,0 +1,14 @@
+.Sidebar {
+        width: "200px";
+        border-right: "1px solid var(--border)";
+        padding: "1rem"
+}
+
+.Stackly {
+    margin-bottom: "1rem"
+}
+
+.Space {
+    margin-top: "1rem";
+    color: "var(--text-muted)"
+}
