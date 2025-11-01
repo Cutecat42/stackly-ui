@@ -1,5 +1,6 @@
 import './styles/App.css';
 import Sidebar from "./components/Sidebar.jsx";
+import Queue from "./components/Queue.jsx";
 
 function App() {
   return (
@@ -11,10 +12,7 @@ function App() {
     </div>
 
     {/* Main Workspace */}
-    <div className="col-10 p-4" style={{ backgroundColor: "#F7F8FA" }}>
-      <h2 style={{ color: "#1A1A1A" }}>Main Workspace</h2>
-          <p style={{ color: "#6A6A6A" }}>This is where your documents and stacks will appear.</p>
-    </div>
+    <Queue />
   </div>
 </div>
   );

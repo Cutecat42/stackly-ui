@@ -1,70 +1,269 @@
-# Getting Started with Create React App
+# Stackly - Document Management App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Stackly is a modern, clean, and bold document management application. It allows users to upload, organize, and manage documents using a simple hierarchy: **Queue → Spaces → Stacks → Labels**.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Table of Contents
 
-### `npm start`
+1. [Overview](#overview)
+2. [Terminology](#terminology)
+3. [Tech Stack](#tech-stack)
+4. [Project Structure](#project-structure)
+5. [Development Roadmap](#development-roadmap)
+6. [Setup Instructions](#setup-instructions)
+7. [Future Enhancements](#future-enhancements)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Overview
 
-### `npm test`
+Stackly allows documents to be uploaded into a Queue, assigned to Spaces (top-level categories), and optionally grouped into Stacks inside each Space. Labels can be added to documents for easy searching. This project is intended as a **portfolio project**, functional but not necessarily production-ready.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Project Status
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Overall Progress:** Phase 1 – Frontend UI Shell
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Phase 0 – Setup
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- [x] Install Node.js, Java, VSCode, IntelliJ
+- [x] Initialize frontend (`stackly-ui`) and backend (`stackly-api`) projects
+- [x] Clean React boilerplate files
+- [x] Create folder structure for frontend (`components/`, `pages/`, `api/`, `styles/`)
 
-### `npm run eject`
+### Phase 1 – Frontend UI Shell
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- [x] Create global CSS (colors/fonts)
+- [x] Build basic Sidebar component
+- [x] Build main workspace placeholder
+- [ ] Make sidebar interactive (clickable Spaces)
+- [ ] Integrate Bootstrap for responsive layout
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Phase 2 – Backend Setup
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- [ ] Initialize Spring Boot project
+- [ ] Add Spring Web, Spring Data JPA, PostgreSQL dependencies
+- [ ] Configure database connection
+- [ ] Create basic health endpoint (`/api/health`)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Phase 3 – Data Models
 
-## Learn More
+- [ ] Create JPA entities: Space, Stack, Document
+- [ ] Seed sample data for testing
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Phase 4 – File Upload & Queue
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- [ ] Implement POST `/api/documents/upload`
+- [ ] Implement GET `/api/documents/queue`
+- [ ] Display unassigned documents in frontend Queue
 
-### Code Splitting
+### Phase 5 – Moving Documents
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- [ ] Implement PUT endpoints to assign documents to Spaces and Stacks
+- [ ] Frontend UI for moving documents from Queue → Space → Stack
 
-### Analyzing the Bundle Size
+### Phase 6 – Display Spaces & Stacks
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- [ ] Sidebar shows Spaces
+- [ ] Clicking a Space shows its Stacks
+- [ ] Clicking a Stack shows its documents
 
-### Making a Progressive Web App
+### Phase 7 – Labels & Search
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- [ ] Add Label entity (many-to-many with Document)
+- [ ] Search documents by name, label, Space, or Stack
 
-### Advanced Configuration
+### Phase 8 – Polish & Extras
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- [ ] Apply Clean + Bold styling (Slate Purple accent)
+- [ ] Make layout responsive for smaller screens
+- [ ] Add hover effects, buttons, and subtle shadows
+- [ ] Optional: drag-and-drop document organization
+- [ ] Optional: authentication and multiple users
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Terminology
 
-### `npm run build` fails to minify
+| Term       | Level               | Purpose                                         | Example                           |
+| ---------- | ------------------- | ----------------------------------------------- | --------------------------------- |
+| **Queue**  | Entry point         | Holds newly uploaded documents not yet assigned | Newly uploaded invoices           |
+| **Space**  | Top-level           | Categorizes documents by department/project     | HR, Accounting, Project X         |
+| **Stack**  | Nested inside Space | Groups related documents                        | Employee Contracts, Invoices 2025 |
+| **Labels** | Tagging             | Searchable descriptors for documents            | Confidential, Q1, Budget          |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Visual Flow:**
+
+```
+Queue (Unassigned Documents)
+  │
+  ├─ Space: HR
+  │     ├─ Stack: Employee Contracts
+  │     │     ├─ Document 1
+  │     │     └─ Document 2
+  │     └─ Stack: Recruitment
+  │           ├─ Document 3
+  │           └─ Document 4
+  │
+  ├─ Space: Accounting
+  │     ├─ Stack: Invoices 2025
+  │     │     ├─ Document 5
+  │     │     └─ Document 6
+  │     └─ Stack: Expense Reports
+  │           └─ Document 7
+  │
+  └─ Space: Project X
+        └─ Document 8 (directly in Space)
+```
+
+This shows how documents move from the Queue into Spaces, then optionally into Stacks.
+
+---
+
+## Tech Stack
+
+**Frontend:**
+
+- React
+- Bootstrap (for UI components and layout)
+- CSS variables for custom styling (Slate Purple accent)
+
+**Backend:**
+
+- Java + Spring Boot
+- Spring Web, Spring Data JPA
+- PostgreSQL (or H2 for testing)
+
+**Storage:**
+
+- Local filesystem for document uploads during development
+
+---
+
+## Project Structure
+
+### Frontend (React)
+
+```
+src/
+  components/   // reusable UI components (Sidebar, TopBar, etc.)
+  pages/        // screen components (QueuePage, SpacePage, StackPage)
+  api/          // API calls (documents.js, spaces.js, stacks.js)
+  styles/       // global variables and layout CSS
+  App.js        // main layout container
+  index.js      // entry point
+```
+
+### Backend (Spring Boot)
+
+```
+stackly-api/
+  src/main/java/.../controller/   // REST controllers
+  src/main/java/.../model/        // JPA entities (Document, Space, Stack, Label)
+  src/main/java/.../repository/   // JPA repositories
+  src/main/java/.../service/      // optional service layer
+  src/main/resources/application.properties  // DB config
+```
+
+---
+
+## Development Roadmap
+
+### Phase 0 – Setup
+
+- Install Node.js, Java, VSCode, IntelliJ
+- Initialize frontend and backend projects
+- Clean React boilerplate
+
+### Phase 1 – Frontend UI Shell
+
+- Global CSS variables for colors/fonts
+- Sidebar component + main workspace placeholder
+- Full-height sidebar with Bootstrap/CSS
+
+### Phase 2 – Backend Setup
+
+- Spring Boot project with health endpoint
+- Configure DB connection
+
+### Phase 3 – Data Models
+
+- Create JPA entities: Space, Stack, Document
+- Seed sample data
+
+### Phase 4 – File Upload & Queue
+
+- POST `/api/documents/upload`
+- GET `/api/documents/queue`
+- Uploaded documents default to Queue
+
+### Phase 5 – Moving Documents
+
+- PUT endpoints to assign documents to Spaces/Stacks
+- Frontend UI to move documents from Queue → Space → Stack
+
+### Phase 6 – Display Spaces & Stacks
+
+- Sidebar shows Spaces
+- Clicking Space shows Stacks
+- Clicking Stack shows documents
+
+### Phase 7 – Labels & Search
+
+- Add Label entity (many-to-many)
+- Search documents by name, label, Space, or Stack
+
+### Phase 8 – Polish & Extras
+
+- Clean + Bold styling (Slate Purple accent)
+- Responsive layout
+- Hover effects, buttons, shadows
+- Optional drag-and-drop and authentication
+
+---
+
+## Setup Instructions
+
+### Frontend
+
+```bash
+# create React app
+npx create-react-app stackly-ui
+cd stackly-ui
+# install Bootstrap
+npm install bootstrap
+# start dev server
+npm start
+```
+
+### Backend
+
+```bash
+# create Spring Boot project in IntelliJ
+# add Spring Web, Spring Data JPA, PostgreSQL driver
+# configure database in application.properties
+# run server locally
+```
+
+### Notes
+
+- Start with frontend UI shell first to visualize layout
+- Add backend APIs progressively
+- Keep folder structure organized for maintainability
+
+---
+
+## Future Enhancements
+
+- Drag-and-drop document organization
+- User authentication & roles
+- Cloud storage support
+- Export/Download document bundles
+- Advanced search & filtering
+
+---
+
+**Author:** Cat Meza
+**Portfolio Project:** Stackly
