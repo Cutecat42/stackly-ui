@@ -50,25 +50,25 @@ Stackly allows documents to be uploaded into a Queue, assigned to Spaces (top-le
 
 ### Phase 3 – Data Models
 
-- [ ] Create JPA entities: Space, Stack, Document
-- [ ] Seed sample data for testing
+- [x] Create JPA entities: Space, Stack, Document
+- [x] Seed sample data for testing
 
-### Phase 4 – File Upload & Queue
+### Phase 4 – Display Spaces & Stacks
+
+- [x] Sidebar shows Spaces and allows adding a Space
+- [ ] Clicking a Space shows its Stacks
+- [ ] Clicking a Stack shows its documents
+
+### Phase 5 – File Upload & Queue
 
 - [ ] Implement POST `/api/documents/upload`
 - [ ] Implement GET `/api/documents/queue`
 - [ ] Display unassigned documents in frontend Queue
 
-### Phase 5 – Moving Documents
+### Phase 6 – Moving Documents
 
 - [ ] Implement PUT endpoints to assign documents to Spaces and Stacks
 - [ ] Frontend UI for moving documents from Queue → Space → Stack
-
-### Phase 6 – Display Spaces & Stacks
-
-- [ ] Sidebar shows Spaces
-- [ ] Clicking a Space shows its Stacks
-- [ ] Clicking a Stack shows its documents
 
 ### Phase 7 – Labels & Search
 
