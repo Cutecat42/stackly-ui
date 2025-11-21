@@ -127,6 +127,7 @@ This shows how documents move from the Queue into Spaces, then optionally into S
 **Frontend:**
 
 - React
+- Axios
 - Bootstrap (for UI components and layout)
 - CSS variables for custom styling (Slate Purple accent)
 
@@ -166,61 +167,6 @@ stackly-api/
   src/main/java/.../service/      // optional service layer
   src/main/resources/application.properties  // DB config
 ```
-
----
-
-## Development Roadmap
-
-### Phase 0 – Setup
-
-- Install Node.js, Java, VSCode, IntelliJ
-- Initialize frontend and backend projects
-- Clean React boilerplate
-
-### Phase 1 – Frontend UI Shell
-
-- Global CSS variables for colors/fonts
-- Sidebar component + main workspace placeholder
-- Full-height sidebar with Bootstrap/CSS
-
-### Phase 2 – Backend Setup
-
-- Spring Boot project with health endpoint
-- Configure DB connection
-
-### Phase 3 – Data Models
-
-- Create JPA entities: Space, Stack, Document
-- Seed sample data
-
-### Phase 4 – File Upload & Queue
-
-- POST `/api/documents/upload`
-- GET `/api/documents/queue`
-- Uploaded documents default to Queue
-
-### Phase 5 – Moving Documents
-
-- PUT endpoints to assign documents to Spaces/Stacks
-- Frontend UI to move documents from Queue → Space → Stack
-
-### Phase 6 – Display Spaces & Stacks
-
-- Sidebar shows Spaces
-- Clicking Space shows Stacks
-- Clicking Stack shows documents
-
-### Phase 7 – Labels & Search
-
-- Add Label entity (many-to-many)
-- Search documents by name, label, Space, or Stack
-
-### Phase 8 – Polish & Extras
-
-- Clean + Bold styling (Slate Purple accent)
-- Responsive layout
-- Hover effects, buttons, shadows
-- Optional drag-and-drop and authentication
 
 ---
 
