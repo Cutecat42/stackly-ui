@@ -56,7 +56,7 @@ Stackly allows documents to be uploaded into a Queue, assigned to Spaces (top-le
 ### Phase 4 – Display Spaces & Stacks
 
 - [x] Sidebar shows Spaces and allows adding a Space
-- [ ] Clicking a Space shows its Stacks
+- [x] Clicking a Space shows its Stacks
 - [ ] Clicking a Stack shows its documents
 
 ### Phase 5 – File Upload & Queue
