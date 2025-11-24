@@ -2,16 +2,11 @@ import Queue from "./Queue.jsx";
 import Spaces from "./Spaces.jsx";
 
 function Main({ activeSpace }) {
-  const showSpaces = activeSpace !== null;
-
+  const isQueueSelected = activeSpace === "Queue" || activeSpace === null;
 
   return (
     <div data-testid="main-container" className="h-100">
-      {showSpaces ? (
-        <Spaces spaceName={activeSpace}/>
-      ) : (
-        <Queue />
-      )}
+      {isQueueSelected ? <Queue /> : <Spaces spaceName={activeSpace} />}
     </div>
   );
 }
