@@ -12,6 +12,7 @@ const chunkArray = (arr, size) => {
 
 function Spaces({ spaceName }) {
   const [stacks, setStacks] = useState([]);
+  const [allStackNames, setAllStackNames] = useState([]);
   const [newStackName, setNewStackName] = useState("");
   const [newStackSchema, setNewStackSchema] = useState([
     { name: "Name", type: "string" },
@@ -19,21 +20,27 @@ function Spaces({ spaceName }) {
   const [nameError, setNameError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedStackName, setSelectedStackName] = useState(null);
+  const [uiError, setUiError] = useState(null);
+
+  const [globalNameFetchFailed, setGlobalNameFetchFailed] = useState(false);
 
   const inputRef = useRef(null);
+
+  const clearError = () => setUiError(null);
 
   const handleCloseModal = () => {
     setNewStackName("");
     setNewStackSchema([{ name: "Name", type: "string" }]);
     setNameError("");
-
+    clearError();
     setShowModal(false);
   };
 
   const getStacks = useCallback(async () => {
+    clearError();
     try {
       const response = await axios.get(
-        "http://localhost:8080/" + spaceName + "/stacks"
+        `http://localhost:8080/${spaceName}/stacks`
       );
       setStacks(response.data);
     } catch (error) {
@@ -42,19 +49,55 @@ function Spaces({ spaceName }) {
         error.response?.data?.message ||
         error.message ||
         "An unknown error occurred.";
-      console.error(`API Error (${status || "Network"}):`, message);
 
+      console.error(
+        `API Error (${status || "Network"}) for space stacks:`,
+        message
+      );
       if (status >= 500) {
-        alert(`Server Error: ${message}`);
+        setUiError(`Server Error: Could not load stacks for ${spaceName}.`);
+      } else if (status === 404) {
+        setUiError(
+          `API 404: The stack endpoint for ${spaceName} was not found. Check if your backend server is running and the path is correct.`
+        );
+      } else if (status >= 400) {
+        setUiError(`Client Error: Invalid request for stacks in ${spaceName}.`);
+      } else {
+        setUiError(
+          "Network Error: Could not connect to the stack server. Check if your API is running and CORS is configured."
+        );
       }
     }
   }, [setStacks, spaceName]);
 
+  const getGlobalStackNames = useCallback(async () => {
+    setGlobalNameFetchFailed(false);
+
+    try {
+      const response = await axios.get("http://localhost:8080/stacks");
+
+      setAllStackNames(response.data);
+    } catch (error) {
+      console.warn(
+        "Global stack name validation data could not be fetched (404/CORS). Global uniqueness check is disabled.",
+        error
+      );
+      setAllStackNames([]);
+      setGlobalNameFetchFailed(true);
+    }
+  }, []);
+
   const postStacks = useCallback(async () => {
     const name = newStackName.trim();
+    clearError();
+
+    if (validateStackName(name)) {
+      setUiError("Please fix the stack name error before submitting.");
+      return;
+    }
 
     if (!name) {
-      alert("Stack name cannot be blank.");
+      setUiError("Stack name cannot be blank.");
       return;
     }
 
@@ -66,16 +109,18 @@ function Spaces({ spaceName }) {
     }, {});
 
     if (Object.keys(formattedSchema).length === 0) {
-      alert("Please define at least one field for the stack schema.");
+      setUiError("Please define at least one field for the stack schema.");
       return;
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/stack", {
+      const payload = {
         stackName: name,
         spaceName: spaceName,
         fieldSchema: formattedSchema,
-      });
+      };
+
+      const response = await axios.post("http://localhost:8080/stack", payload);
 
       console.log("SUCCESS: Stack created", response.data);
 
@@ -84,35 +129,40 @@ function Spaces({ spaceName }) {
       setShowModal(false);
 
       getStacks();
+      getGlobalStackNames();
     } catch (error) {
       const status = error.response?.status;
       const message =
         error.response?.data?.message || "An unknown server error.";
 
       console.error(`POST Error (${status}):`, message);
-      alert(`Error adding stack: ${message}`);
+      setUiError(`Failed to create stack: ${message}`);
     }
-  }, [newStackName, newStackSchema, setNewStackName, getStacks]);
+  }, [newStackName, newStackSchema, getStacks, getGlobalStackNames, spaceName]);
 
   const validateStackName = (name) => {
     const trimmedName = name.trim();
+    let errorFound = false;
 
     if (!trimmedName) {
       setNameError("");
       return false;
     }
 
-    const exists = stacks.some(
-      (stack) => stack.stackName.toLowerCase() === trimmedName.toLowerCase()
+    const exists = allStackNames.some(
+      (stackName) => stackName.toLowerCase() === trimmedName.toLowerCase()
     );
 
     if (exists) {
-      setNameError(`Stack already exists with name: "${trimmedName}"`);
-      return true;
+      setNameError(
+        `Stack already exists globally with name: "${trimmedName}". Stack names must be unique across all spaces.`
+      );
+      errorFound = true;
+    } else {
+      setNameError("");
     }
 
-    setNameError("");
-    return false;
+    return errorFound;
   };
 
   const handleNameChange = (e) => {
@@ -123,11 +173,25 @@ function Spaces({ spaceName }) {
 
   useEffect(() => {
     getStacks();
-  }, [getStacks]);
+    getGlobalStackNames();
+  }, [getStacks, getGlobalStackNames]);
 
   useEffect(() => {
     setSelectedStackName(null);
   }, [spaceName]);
+
+  useEffect(() => {
+    if (showModal && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showModal]);
+
+  useEffect(() => {
+    if (uiError) {
+      const timer = setTimeout(clearError, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [uiError]);
 
   const handleClick = (stackName) => {
     setSelectedStackName(stackName);
@@ -142,6 +206,7 @@ function Spaces({ spaceName }) {
   };
 
   const handleRemoveField = (index) => {
+    if (newStackSchema.length <= 1) return;
     setNewStackSchema((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -174,9 +239,25 @@ function Spaces({ spaceName }) {
             <button
               className="btn btn-sm btn-primary mb-3"
               onClick={() => setShowModal(true)}
+              style={{ backgroundColor: "#7A5DF6", borderColor: "#7A5DF6" }}
             >
               + Add Stack
             </button>
+
+            {uiError && (
+              <div
+                className="alert alert-danger p-2 mb-3 d-flex justify-content-between align-items-center"
+                role="alert"
+              >
+                <small>{uiError}</small>
+                <button
+                  type="button"
+                  className="btn-close ms-2"
+                  onClick={clearError}
+                  aria-label="Close"
+                ></button>
+              </div>
+            )}
 
             <div
               className="border border-secondary-subtle"
@@ -201,8 +282,11 @@ function Spaces({ spaceName }) {
                         >
                           <a
                             href="#"
-                            className="p-3 text-dark text-decoration-none d-block"
-                            onClick={() => handleClick(stack.stackName)}
+                            className="p-3 text-dark text-decoration-none d-block transition-all hover:bg-gray-200"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleClick(stack.stackName);
+                            }}
                             style={{ cursor: "pointer" }}
                           >
                             {stack.stackName}
@@ -212,6 +296,11 @@ function Spaces({ spaceName }) {
                     </div>
                   </div>
                 ))}
+                {stacks.length === 0 && !uiError && (
+                  <div className="col-12 p-4 text-center text-secondary">
+                    No stacks found in this space.
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -223,8 +312,9 @@ function Spaces({ spaceName }) {
         >
           <div className="ps-4">
             <button
-              className="btn btn-sm btn-primary mb-1"
+              className="btn btn-sm btn-primary mb-3"
               onClick={handleBack}
+              style={{ backgroundColor: "#7A5DF6", borderColor: "#7A5DF6" }}
             >
               &larr; Back to Stacks
             </button>
@@ -252,9 +342,26 @@ function Spaces({ spaceName }) {
                 ></button>
               </div>
               <div className="modal-body">
+                {globalNameFetchFailed && (
+                  <div
+                    className="alert alert-warning p-2 mb-3"
+                    role="alert"
+                    style={{ fontSize: "0.875em" }}
+                  >
+                    <small>
+                      **API Warning:** Global stack uniqueness validation is
+                      disabled because the endpoint
+                      `http://localhost:8080/stacks` failed to load (404 Not
+                      Found or CORS issue). Please ensure your backend server is
+                      running with the required `GET /stacks` endpoint.
+                    </small>
+                  </div>
+                )}
+
                 <div className="mb-3">
                   <label className="form-label fw-bold">Stack Name</label>
                   <input
+                    ref={inputRef}
                     type="text"
                     className={`form-control ${nameError ? "is-invalid" : ""}`}
                     placeholder="e.g. Employees"
@@ -262,14 +369,11 @@ function Spaces({ spaceName }) {
                     onChange={handleNameChange}
                   />
                   {nameError && (
-                    <div className="invalid-feedback d-block text-danger mt-1">
-                      {nameError}
-                    </div>
+                    <div className="invalid-feedback d-block">{nameError}</div>
                   )}
                 </div>
 
                 <h6 className="mt-4 border-bottom pb-2">Define Field Schema</h6>
-
                 {newStackSchema.map((field, index) => (
                   <div key={index} className="row g-2 mb-2 align-items-center">
                     <div className="col-5">
@@ -316,6 +420,11 @@ function Spaces({ spaceName }) {
                 >
                   + Add Field
                 </button>
+                {uiError && (
+                  <div className="alert alert-warning mt-3 p-2">
+                    <small>{uiError}</small>
+                  </div>
+                )}
               </div>
               <div className="modal-footer">
                 <button
@@ -349,7 +458,5 @@ function Spaces({ spaceName }) {
     </>
   );
 }
-
-const FIELD_TYPES = ["string", "number", "boolean", "date"];
 
 export default Spaces;
