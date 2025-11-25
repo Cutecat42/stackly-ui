@@ -6,6 +6,7 @@ function Sidebar({ setActiveSpace }) {
   const [newSpaceName, setNewSpaceName] = useState("");
   const [isInputVisible, setIsInputVisible] = useState(false);
   const [currentActiveSpace, setCurrentActiveSpace] = useState("Queue");
+  const [spaceNameError, setSpaceNameError] = useState("");
 
   const inputRef = useRef(null);
 
@@ -38,8 +39,39 @@ function Sidebar({ setActiveSpace }) {
     }
   }, [setSpaces]);
 
+  const validateSpaceName = (name) => {
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      setSpaceNameError("");
+      return false;
+    }
+
+    const exists = spaces.some(
+      (space) => space.spaceName.toLowerCase() === trimmedName.toLowerCase()
+    );
+
+    if (exists) {
+      setSpaceNameError(`Space already exists with name: "${trimmedName}"`);
+      return true;
+    }
+
+    setSpaceNameError("");
+    return false;
+  };
+
+  const handleNameChange = (e) => {
+    const name = e.target.value;
+    setNewSpaceName(name);
+    validateSpaceName(name);
+  };
+
   const postSpaces = useCallback(async () => {
     const name = newSpaceName.trim();
+
+    if (validateSpaceName(name)) {
+      return;
+    }
 
     if (!name) {
       alert("Space name cannot be blank.");
@@ -55,6 +87,7 @@ function Sidebar({ setActiveSpace }) {
 
       setNewSpaceName("");
       setIsInputVisible(false);
+      setSpaceNameError("");
 
       getSpaces();
     } catch (error) {
@@ -65,11 +98,12 @@ function Sidebar({ setActiveSpace }) {
       console.error(`POST Error (${status}):`, message);
       alert(`Error adding space: ${message}`);
     }
-  }, [newSpaceName, setNewSpaceName, setIsInputVisible, getSpaces]);
-
+  }, [newSpaceName, setNewSpaceName, setIsInputVisible, getSpaces, spaces]);
   useEffect(() => {
     getSpaces();
   }, [getSpaces]);
+
+  const isSpaceButtonDisabled = newSpaceName.trim() === "" || !!spaceNameError;
 
   return (
     <div
@@ -115,7 +149,9 @@ function Sidebar({ setActiveSpace }) {
           <input
             type="text"
             placeholder="Enter space name"
-            className="form-control mb-1"
+            className={`form-control mb-1 ${
+              spaceNameError ? "is-invalid" : ""
+            }`}
             ref={inputRef}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -123,19 +159,33 @@ function Sidebar({ setActiveSpace }) {
               }
             }}
             value={newSpaceName}
-            onChange={(e) => setNewSpaceName(e.target.value)}
+            onChange={handleNameChange}
           />
+          {spaceNameError && (
+            <div className="invalid-feedback d-block text-danger mb-1">
+              {spaceNameError}
+            </div>
+          )}
+
           <div className="d-flex justify-content-end">
             <button
               className="btn btn-sm btn-light me-2"
-              onClick={() => setIsInputVisible(false)}
+              onClick={() => {
+                setIsInputVisible(false);
+                setSpaceNameError("");
+                setNewSpaceName("");
+              }}
             >
               Cancel
             </button>
             <button
-              className="btn btn-sm btn-primary"
+              className={`btn btn-sm ${
+                isSpaceButtonDisabled
+                  ? "btn-light text-secondary border"
+                  : "btn-primary"
+              }`}
               onClick={postSpaces}
-              disabled={newSpaceName.trim() === ""}
+              disabled={isSpaceButtonDisabled}
             >
               Add
             </button>
